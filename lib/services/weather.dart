@@ -1,4 +1,29 @@
+import 'package:WeatherApp/services/location.dart';
+import 'package:WeatherApp/services/networking.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+
+final key = DotEnv().env['API_KEY'];
+const baseUrl = 'https://api.openweathermap.org/data/2.5/weather';
+
 class WeatherModel {
+  Future<dynamic> getWeatherByCity(String cityName) async {
+    NetworkHelper networkHelper = NetworkHelper(
+        url: '$baseUrl?q=$cityName&units=metric&appid=$key&units=metric');
+    var weatherData = await networkHelper.getData();
+    return weatherData;
+  }
+
+  Future<dynamic> getWeatherLocation() async {
+    Location location = Location();
+    await location
+        .getLocation(); //we use await keyword to block the execution unitl we get a real response.Or else the two print statements will print null.
+    NetworkHelper networkHelper = NetworkHelper(
+        url:
+            '$baseUrl?lat=${location.latitude}&lon=${location.longitude}&appid=$key&units=metric');
+    var weatherData = await networkHelper.getData();
+    return weatherData;
+  }
+
   String getWeatherIcon(int condition) {
     if (condition < 300) {
       return '🌩';

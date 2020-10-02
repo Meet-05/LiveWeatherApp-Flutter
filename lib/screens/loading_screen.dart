@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
-import 'package:geolocator/geolocator.dart';
+import 'package:WeatherApp/screens/location_screen.dart';
+import 'package:flutter_spinkit/flutter_spinkit.dart';
+import 'package:WeatherApp/services/weather.dart';
 
 class LoadingScreen extends StatefulWidget {
   @override
@@ -8,23 +10,29 @@ class LoadingScreen extends StatefulWidget {
 }
 
 class _LoadingScreenState extends State<LoadingScreen> {
+  //This method is called whenever the stateful widget is added i the widget tree
+  void initState() {
+    super.initState();
+    getLocation();
+  }
+
   void getLocation() async {
-    Position position = await Geolocator()
-        .getCurrentPosition(desiredAccuracy: LocationAccuracy.low);
-    print(position);
+    var weatherData = await WeatherModel().getWeatherLocation();
+    Navigator.push(context, MaterialPageRoute(builder: (context) {
+      return LocationScreen(
+        locationWeather: weatherData,
+      );
+    }));
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: RaisedButton(
-          onPressed: () {
-            getLocation();
-          },
-          child: Text('Get Location'),
-        ),
-      ),
+          child: SpinKitChasingDots(
+        color: Colors.blue,
+        size: 90,
+      )),
     );
   }
 }
